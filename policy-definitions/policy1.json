@@ -1,0 +1,57 @@
+{
+    "name": "Add-env-tag-to-rg",
+    "properties": {
+        "displayName": "Tag resource groups with environment tag",
+        "description": "Ensure tag with key 'environment' onto all resource groups.",
+        "policyType": "Custom",
+        "mode": "Indexed",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "my custom catgeory"
+        },
+        "parameters": {
+            "allowed_environments": {
+                "type": "string",
+                "metadata": {
+                    "description": "The value here will be the value to the 'environment' tag.",
+                    "displayName": "disp_allowed_environments"
+                },
+                "defaultValue": "prd",
+                "allowedValues": [
+                    "dev",
+                    "tst",
+                    "npd",
+                    "stg",
+                    "ppd",
+                    "prd"
+                ]
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Resources/subscriptions/resourceGroup"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "modify",
+                "details": {
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/7f8b9d9f-b3fa-4010-a14b-1f3f19c5c433"
+                    ],
+                    "conflictEffect": "audit",
+                    "operations": [
+                        {
+                            "operation": "add",
+                            "field": "tags['environment']",
+                            "value": "[parameters('allowed_environments')]"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

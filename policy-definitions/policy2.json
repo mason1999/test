@@ -1,0 +1,55 @@
+{
+    "name": "Add-team-tag-to-rg",
+    "properties": {
+        "displayName": "Tag resource groups with team tag",
+        "description": "Ensure tag with key 'team' onto all resource groups.",
+        "policyType": "Custom",
+        "mode": "Indexed",
+        "metadata": {
+            "version": "1.0.0",
+            "category": "my custom catgeory"
+        },
+        "parameters": {
+            "allowed_teams": {
+                "type": "string",
+                "metadata": {
+                    "description": "The value here will be the value to the 'team' tag.",
+                    "displayName": "disp_allowed_teams"
+                },
+                "defaultValue": "developer",
+                "allowedValues": [
+                    "developer",
+                    "cloud",
+                    "network",
+                    "security"
+                ]
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Resources/subscriptions/resourceGroup"
+                    }
+                ]
+            },
+            "then": {
+                "effect": "modify",
+                "details": {
+                    "roleDefinitionIds": [
+                        "/providers/Microsoft.Authorization/roleDefinitions/7f8b9d9f-b3fa-4010-a14b-1f3f19c5c433"
+                    ],
+                    "conflictEffect": "audit",
+                    "operations": [
+                        {
+                            "operation": "add",
+                            "field": "tags['team']",
+                            "value": "[parameters('allowed_teams')]"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
